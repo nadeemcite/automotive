@@ -20,9 +20,11 @@ STEP_CONFIG = {
 
 def cron_execute(row):
     variable_sheet_gid = row[0]
-    row_index = len(read_gsheet(GSHEET_URL, sheet_id=variable_sheet_gid)) + 1
-    input_variables = {el: "" for el in json.loads(row[1])}
-    step_config = OrderedDict((row[i], row[i + 1]) for i in range(2, len(row[1:]), 2))
+    sheet_data = read_gsheet(GSHEET_URL, sheet_id=variable_sheet_gid)
+    variables = sheet_data[0]
+    row_index = len(sheet_data) + 1
+    input_variables = {el: "" for el in variables}
+    step_config = OrderedDict((row[i], row[i + 1]) for i in range(1, len(row[1:]), 2))
     for step, config in step_config.items():
         step_executor = STEP_CONFIG[step](config, input_variables)
         step_executor.exec()
