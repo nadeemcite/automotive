@@ -1,6 +1,7 @@
 from automation.automation_executor import AutomationExecutor
 import requests
 
+
 class CallApi(AutomationExecutor):
     def exec(self):
         if "method" in self.config and self.config["method"].lower() == "post":
@@ -18,4 +19,3 @@ class CallApi(AutomationExecutor):
             )
         if resp.text:
             self.input_variables[self.config["result_var"]] = resp.text
-    
