@@ -3,8 +3,8 @@ from collections import OrderedDict
 import os
 from automation.array_join import ArrayJoin
 from automation.call_api import CallApi
+from automation.conditional_break import ConditionalBreak
 from automation.read_html import ReadHtml
-import json
 from dotenv import load_dotenv
 from utils.gsheet import read_gsheet, update_cell
 
@@ -15,7 +15,8 @@ GSHEET_URL = os.getenv("GSHEET_URL")
 STEP_CONFIG = {
     "Read HTML": ReadHtml,
     "Call API": CallApi,
-    "Array Join": ArrayJoin
+    "Array Join": ArrayJoin,
+    "Conditional Break": ConditionalBreak
 }
 
 def cron_execute(row):
@@ -27,8 +28,10 @@ def cron_execute(row):
     step_config = OrderedDict((row[i], row[i + 1]) for i in range(1, len(row[1:]), 2))
     for step, config in step_config.items():
         step_executor = STEP_CONFIG[step](config, input_variables)
-        step_executor.exec()
+        execution_response = step_executor.exec()
         input_variables = step_executor.input_variables
+        if step == "Conditional Break" and execution_response:
+            break
     for i, (key, val) in enumerate(input_variables.items()):
         update_cell(GSHEET_URL, variable_sheet_gid, row_index, i+1, val)
     return "success"

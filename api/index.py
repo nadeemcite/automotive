@@ -38,6 +38,7 @@ class handler(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(b"No data field found.")
         except Exception as e:
+            print(e)
             self.send_response(400)
             self.send_header("Content-type", "text/plain")
             self.end_headers()

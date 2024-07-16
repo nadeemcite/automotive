@@ -12,13 +12,18 @@ class ReadHtml(AutomationExecutor):
         html_content = response.content
         soup = BeautifulSoup(html_content, "html.parser")
         dom = etree.HTML(str(soup))
-        results = []
-        for extract in self.config["extracts"]:
-            xpath = extract
-            elements = dom.xpath(xpath)
-            text_content = ""
-            for element in elements:
-                text_content = "".join(element.itertext())
-            results.append(text_content)
-        self.input_variables[self.config["result_var"]] = json.dumps(results)
-        # print(self.input_variables)
+        if "extracts" in self.config:
+            results = []
+            for extract in self.config["extracts"]:
+                results.append(self.extract_xpath(dom, extract))
+            self.input_variables[self.config["result_var"]] = json.dumps(results)
+        elif "extract" in self.config:
+            result = self.extract_xpath(dom, self.config["extract"])
+            self.input_variables[self.config["result_var"]] = result
+
+    def extract_xpath(self, dom, xpath):
+        elements = dom.xpath(xpath)
+        text_content = ""
+        for element in elements:
+            text_content = "".join(element.itertext())
+        return text_content
