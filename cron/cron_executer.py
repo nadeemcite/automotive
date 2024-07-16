@@ -23,14 +23,8 @@ def cron_execute(row):
     row_index = len(read_gsheet(GSHEET_URL, sheet_id=variable_sheet_gid)) + 1
     input_variables = {el: "" for el in json.loads(row[1])}
     step_config = OrderedDict((row[i], row[i + 1]) for i in range(2, len(row[1:]), 2))
-    x = 0
     for step, config in step_config.items():
-        x += 1
-        if x == 3:
-            # print(config)
-            step_executor = STEP_CONFIG[step](config, input_variables)
-        else:
-            step_executor = STEP_CONFIG[step](config, input_variables)
+        step_executor = STEP_CONFIG[step](config, input_variables)
         step_executor.exec()
         input_variables = step_executor.input_variables
     for i, (key, val) in enumerate(input_variables.items()):
