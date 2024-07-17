@@ -4,6 +4,7 @@ import os
 from automation.array_join import ArrayJoin
 from automation.call_api import CallApi
 from automation.conditional_break import ConditionalBreak
+from automation.eval import Eval
 from automation.read_html import ReadHtml
 from dotenv import load_dotenv
 from utils.gsheet import read_gsheet, update_cell
@@ -16,7 +17,8 @@ STEP_CONFIG = {
     "Read HTML": ReadHtml,
     "Call API": CallApi,
     "Array Join": ArrayJoin,
-    "Conditional Break": ConditionalBreak
+    "Conditional Break": ConditionalBreak,
+    "Eval": Eval,
 }
 
 def cron_execute(row):
