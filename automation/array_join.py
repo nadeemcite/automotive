@@ -1,5 +1,6 @@
-from automation.automation_executor import AutomationExecutor
 import json
+
+from automation.automation_executor import AutomationExecutor
 
 
 class ArrayJoin(AutomationExecutor):

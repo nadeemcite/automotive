@@ -1,5 +1,6 @@
-from automation.automation_executor import AutomationExecutor
 import requests
+
+from automation.automation_executor import AutomationExecutor
 
 
 class CallApi(AutomationExecutor):

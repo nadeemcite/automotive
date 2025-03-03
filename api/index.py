@@ -1,32 +1,81 @@
-from http.server import BaseHTTPRequestHandler
-import cgi
 import ast
+from email.parser import BytesParser
+from http.server import BaseHTTPRequestHandler
+from urllib.parse import parse_qs
+
 from cron.cron_executer import cron_execute
 
 
-class handler(BaseHTTPRequestHandler):
+class Handler(BaseHTTPRequestHandler):
+    """
+    A simple HTTP request handler supporting GET and POST methods.
+
+    GET:
+        A health check endpoint that returns a plain text "Hello" message.
+
+    POST:
+        An endpoint to execute automation. It expects a URL-encoded form body
+        containing a "data" parameter. The "data" parameter should be a string
+        representation of a Python literal. This literal is safely evaluated
+        using ast.literal_eval and passed to the cron_execute function.
+    """
 
     def do_GET(self):
+        """
+        Handle GET requests for health check.
+
+        Responds with HTTP 200 and a plain text message "Hello".
+        """
         self.send_response(200)
         self.send_header("Content-type", "text/plain")
         self.end_headers()
         self.wfile.write("Hello".encode("utf-8"))
-        return
 
     def do_POST(self):
+        """
+        Handle POST requests to execute automation.
 
-        form = cgi.FieldStorage(
-            fp=self.rfile,
-            headers=self.headers,
-            environ={
-                "REQUEST_METHOD": "POST",
-                "CONTENT_TYPE": self.headers["Content-Type"],
-            },
-        )
+        Expected Request:
+            - Content-Type: application/x-www-form-urlencoded
+            - Body: A URL-encoded string with a 'data' field.
+
+        Processing:
+            - Reads the content length from the headers.
+            - Decodes the request body and parses it using urllib.parse.parse_qs.
+            - If a 'data' parameter is present, it evaluates the string using
+              ast.literal_eval and passes the result to cron_execute.
+            - Returns the message produced by cron_execute on success.
+
+        Responses:
+            - HTTP 200: When automation executes successfully.
+            - HTTP 400: For unsupported content types (like multipart/form-data)
+                       or when errors occur (e.g., missing 'data' field or evaluation errors).
+        """
+        # Read the content length from headers
+        content_length = int(self.headers.get("Content-Length", 0))
+        raw_data = self.rfile.read(content_length)
+
+        # Determine the content type from headers
+        headers = BytesParser().parsebytes(self.headers.as_bytes())
+        content_type = headers.get("Content-Type", "")
+
+        if "multipart/form-data" in content_type:
+            # Reject multipart/form-data requests as parsing is not implemented
+            self.send_response(400)
+            self.send_header("Content-type", "text/plain")
+            self.end_headers()
+            self.wfile.write(b"multipart/form-data is not supported.")
+            return
+
         try:
-            if "data" in form:
-                # Assuming "data" contains multiple items
-                data = ast.literal_eval(form.getvalue("data"))
+            # Assume the body is URL-encoded form data
+            form_data = raw_data.decode("utf-8")
+            params = parse_qs(form_data)
+
+            if "data" in params:
+                # Extract the first value for the 'data' parameter
+                data_str = params["data"][0]
+                data = ast.literal_eval(data_str)
                 final_message = cron_execute(data)
                 self.send_response(200)
                 self.send_header("Content-type", "text/plain")
@@ -38,9 +87,9 @@ class handler(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(b"No data field found.")
         except Exception as e:
-            print(e)
+            # Log the error for debugging purposes and return error details
+            print(f"Error processing POST request: {e}")
             self.send_response(400)
             self.send_header("Content-type", "text/plain")
             self.end_headers()
             self.wfile.write(str(e).encode("utf-8"))
-        return

@@ -1,12 +1,13 @@
+import os
 from collections import OrderedDict
 
-import os
+from dotenv import load_dotenv
+
 from automation.array_join import ArrayJoin
 from automation.call_api import CallApi
 from automation.conditional_break import ConditionalBreak
 from automation.eval import Eval
 from automation.read_html import ReadHtml
-from dotenv import load_dotenv
 from utils.gsheet import read_gsheet, update_cell
 
 load_dotenv()
@@ -20,6 +21,7 @@ STEP_CONFIG = {
     "Conditional Break": ConditionalBreak,
     "Eval": Eval,
 }
+
 
 def cron_execute(row):
     variable_sheet_gid = row[0]
@@ -35,5 +37,5 @@ def cron_execute(row):
         if step == "Conditional Break" and execution_response:
             break
     for i, (key, val) in enumerate(input_variables.items()):
-        update_cell(GSHEET_URL, variable_sheet_gid, row_index, i+1, val)
+        update_cell(GSHEET_URL, variable_sheet_gid, row_index, i + 1, val)
     return "success"

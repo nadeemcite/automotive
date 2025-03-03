@@ -1,8 +1,10 @@
-from automation.automation_executor import AutomationExecutor
-from bs4 import BeautifulSoup
-import requests
-from lxml import etree
 import json
+
+import requests
+from bs4 import BeautifulSoup
+from lxml import etree
+
+from automation.automation_executor import AutomationExecutor
 
 
 class ReadHtml(AutomationExecutor):

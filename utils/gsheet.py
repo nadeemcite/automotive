@@ -1,14 +1,15 @@
+import logging
 import os
 import tempfile
 
 import gspread
 from dotenv import load_dotenv
 from oauth2client.service_account import ServiceAccountCredentials
-import logging
 
 load_dotenv()
 
 CREDENTIALS_JSON = os.getenv("CREDENTIALS_JSON")
+
 
 def get_gsheet_client():
     fp = tempfile.NamedTemporaryFile(delete=False)
@@ -22,6 +23,7 @@ def get_gsheet_client():
     os.unlink(fp.name)
     return gspread.authorize(creds)
 
+
 def get_sheet_by_id(sheet_url, sheet_id):
     client = get_gsheet_client()
     worksheets = client.open_by_url(sheet_url).worksheets()
@@ -29,6 +31,7 @@ def get_sheet_by_id(sheet_url, sheet_id):
         (sheet for sheet in worksheets if str(sheet.id) == str(sheet_id)), None
     )
     return sheet
+
 
 def read_gsheet(sheet_url, skip_rows=0, sheet_id=None):
     sheet = get_sheet_by_id(sheet_url, sheet_id)
