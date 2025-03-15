@@ -8,16 +8,19 @@ permissions:
   issues: write
 
 jobs:
-  add-comment:
+  comment:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
-      - name: Comment on PR
-        uses: actions/github-script@v6
+      - name: Comment on the pull request
+        uses: actions/github-script@v7
         with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            github.issues.createComment({
-              issue_number: context.payload.pull_request.number,
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: "Thanks for your pull request! We will review it shortly."
+              body: '👋 Thanks for reporting!'
             })
