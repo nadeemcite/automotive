@@ -13,40 +13,36 @@ jobs:
     permissions:
       pull-requests: write
     steps:
-      - name: Find existing bot comment
-        id: find_comment
+      - name: Delete existing bot comment if any
         uses: actions/github-script@v6
         with:
           script: |
-            // Get the current timestamp in ISO format
-            const timestamp = new Date().toISOString();
-            // Build the comment message including a unique marker and timestamp
-            const message = `<!-- my-bot-comment --> A new commit has been pushed to this pull request. Timestamp: ${timestamp}`;
-            
-            // Retrieve all comments on the pull request
+            // List all comments on the pull request
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
             });
-            
-            // Look for an existing comment with our unique marker
+            // Find a comment containing the unique marker
             const botComment = comments.find(comment => comment.body.includes('<!-- my-bot-comment -->'));
-            
             if (botComment) {
-              // Update the existing comment with the new message and timestamp
-              await github.rest.issues.updateComment({
+              await github.rest.issues.deleteComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 comment_id: botComment.id,
-                body: message,
-              });
-            } else {
-              // Create a new comment if none exists
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.issue.number,
-                body: message,
               });
             }
+      - name: Create new bot comment with timestamp
+        uses: actions/github-script@v6
+        with:
+          script: |
+            // Get current timestamp
+            const timestamp = new Date().toISOString();
+            // Build the new comment message with unique marker and timestamp
+            const message = `<!-- my-bot-comment --> A new commit has been pushed to this pull request. Timestamp: ${timestamp}`;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: message,
+            });
