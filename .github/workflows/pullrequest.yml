@@ -16,10 +16,10 @@ jobs:
       - name: Run PR Scanner
         id: pr_scanner
         run: |
-          # Run your docker container and capture its output.
           OUTPUT=$(docker run hello-world)
-          # Set the output variable for subsequent steps.
-          echo "docker_output=$OUTPUT" >> $GITHUB_OUTPUT
+          echo "docker_output<<EOF" >> $GITHUB_OUTPUT
+          echo "$OUTPUT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
       - name: Delete existing bot comment if any
         uses: actions/github-script@v6
         with:
