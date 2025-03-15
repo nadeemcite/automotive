@@ -13,6 +13,13 @@ jobs:
     permissions:
       pull-requests: write
     steps:
+      - name: Run PR Scanner
+        id: pr_scanner
+        run: |
+          # Run your docker container and capture its output.
+          OUTPUT=$(docker run hello-world)
+          # Set the output variable for subsequent steps.
+          echo "docker_output=$OUTPUT" >> $GITHUB_OUTPUT
       - name: Delete existing bot comment if any
         uses: actions/github-script@v6
         with:
@@ -39,7 +46,10 @@ jobs:
             // Get current timestamp
             const timestamp = new Date().toISOString();
             // Build the new comment message with unique marker and timestamp
-            const message = `<!-- my-bot-comment --> A new commit has been pushed to this pull request. Timestamp: ${timestamp}`;
+            const message = `<!-- my-bot-comment --> A new commit has been pushed to this pull request. Timestamp: ${timestamp} 
+
+            OUTPUT: 
+            ${process.env.DOCKER_OUTPUT}`;
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
