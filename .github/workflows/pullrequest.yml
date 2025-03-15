@@ -21,9 +21,7 @@ jobs:
             // Get the current timestamp in ISO format
             const timestamp = new Date().toISOString();
             // Build the comment message including a unique marker and timestamp
-            const message = `<!-- my-bot-comment -->
-A new commit has been pushed to this pull request.
-Timestamp: ${timestamp}`;
+            const message = `<!-- my-bot-comment --> A new commit has been pushed to this pull request. Timestamp: ${timestamp}`;
             
             // Retrieve all comments on the pull request
             const { data: comments } = await github.rest.issues.listComments({
