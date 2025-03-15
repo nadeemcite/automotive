@@ -22,6 +22,8 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
       - name: Delete existing bot comment if any
         uses: actions/github-script@v6
+        env:
+          DOCKER_OUTPUT: ${{ steps.run_docker.outputs.docker_output }}
         with:
           script: |
             // List all comments on the pull request
