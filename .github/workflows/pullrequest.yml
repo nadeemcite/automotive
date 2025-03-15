@@ -13,14 +13,37 @@ jobs:
     permissions:
       pull-requests: write
     steps:
-      - name: Comment on the pull request
-        uses: actions/github-script@v7
+      - name: Find existing bot comment
+        id: find_comment
+        uses: actions/github-script@v6
         with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
+            const comments = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '👋 Thanks for reporting!'
-            })
+              issue_number: context.issue.number
+            });
+            const botComment = comments.data.find(comment => comment.body.includes('<!-- my-bot-comment -->'));
+            return botComment ? botComment.id : '';
+      - name: Update or create bot comment
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const commentId = '${{ steps.find_comment.outputs.result }}';
+            if (commentId) {
+              // Update the existing comment
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: parseInt(commentId),
+                body: '<!-- my-bot-comment --> Updated comment: A new commit has been pushed to this pull request.'
+              });
+            } else {
+              // Create a new comment if one doesn't exist
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: '<!-- my-bot-comment --> A new commit has been pushed to this pull request.'
+              });
+            }
