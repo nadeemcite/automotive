@@ -51,16 +51,12 @@ class Handler(BaseHTTPRequestHandler):
             - HTTP 400: For unsupported content types (like multipart/form-data)
                        or when errors occur (e.g., missing 'data' field or evaluation errors).
         """
-        # Read the content length from headers
         content_length = int(self.headers.get("Content-Length", 0))
         raw_data = self.rfile.read(content_length)
-
-        # Determine the content type from headers
         headers = BytesParser().parsebytes(self.headers.as_bytes())
         content_type = headers.get("Content-Type", "")
 
         if "multipart/form-data" in content_type:
-            # Reject multipart/form-data requests as parsing is not implemented
             self.send_response(400)
             self.send_header("Content-type", "text/plain")
             self.end_headers()
@@ -68,12 +64,10 @@ class Handler(BaseHTTPRequestHandler):
             return
 
         try:
-            # Assume the body is URL-encoded form data
             form_data = raw_data.decode("utf-8")
             params = parse_qs(form_data)
 
             if "data" in params:
-                # Extract the first value for the 'data' parameter
                 data_str = params["data"][0]
                 data = ast.literal_eval(data_str)
                 final_message = cron_execute(data)
@@ -87,7 +81,6 @@ class Handler(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(b"No data field found.")
         except Exception as e:
-            # Log the error for debugging purposes and return error details
             print(f"Error processing POST request: {e}")
             self.send_response(400)
             self.send_header("Content-type", "text/plain")
