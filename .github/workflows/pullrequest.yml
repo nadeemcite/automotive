@@ -18,32 +18,37 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const comments = await github.rest.issues.listComments({
+            // Get the current timestamp in ISO format
+            const timestamp = new Date().toISOString();
+            // Build the comment message including a unique marker and timestamp
+            const message = `<!-- my-bot-comment -->
+A new commit has been pushed to this pull request.
+Timestamp: ${timestamp}`;
+            
+            // Retrieve all comments on the pull request
+            const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.issue.number
+              issue_number: context.issue.number,
             });
-            const botComment = comments.data.find(comment => comment.body.includes('<!-- my-bot-comment -->'));
-            return botComment ? botComment.id : '';
-      - name: Update or create bot comment
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const commentId = '${{ steps.find_comment.outputs.result }}';
-            if (commentId) {
-              // Update the existing comment
+            
+            // Look for an existing comment with our unique marker
+            const botComment = comments.find(comment => comment.body.includes('<!-- my-bot-comment -->'));
+            
+            if (botComment) {
+              // Update the existing comment with the new message and timestamp
               await github.rest.issues.updateComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                comment_id: parseInt(commentId),
-                body: '<!-- my-bot-comment --> Updated comment: A new commit has been pushed to this pull request.'
+                comment_id: botComment.id,
+                body: message,
               });
             } else {
-              // Create a new comment if one doesn't exist
+              // Create a new comment if none exists
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: context.issue.number,
-                body: '<!-- my-bot-comment --> A new commit has been pushed to this pull request.'
+                body: message,
               });
             }
