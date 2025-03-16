@@ -18,7 +18,6 @@ jobs:
 
       - name: Create env file from PR_SCANNER secret
         run: |
-          # Decode the base64-encoded PR_SCANNER secret into a file for Docker to use
           echo "${{ secrets.PR_SCANNER }}" | base64 --decode > pr_scanner.env
 
       - name: Run PR Scanner
@@ -30,6 +29,5 @@ jobs:
               -e GITHUB_REPOSITORY="${{ github.repository }}" \
               -e GITHUB_ISSUE_NUMBER="${{ github.event.number }}" \
               -e PROJECT_ROOT=/src \
-              -v "/tmp/out:/out" \
               -v "$(pwd):/src" \
               nady5730642/ai-scan-job:latest
