@@ -51,13 +51,11 @@ class TestSampleCode(TestCase):
             add_two_numbers(1.5, 2)
 
     def test_type_validation(self):
-        # Test string inputs
         with self.assertRaises(TypeError):
             add_two_numbers("1", 2)
         with self.assertRaises(TypeError):
             add_two_numbers(1, "2")
-            
-        # Test float inputs
+
         with self.assertRaises(TypeError):
             add_two_numbers(1.5, 2)
         with self.assertRaises(TypeError):
