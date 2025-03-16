@@ -63,7 +63,6 @@ class TestSampleCode(TestCase):
         with self.assertRaises(TypeError):
             add_two_numbers(1, 2.5)
             
-        # Test None inputs
         with self.assertRaises(TypeError):
             add_two_numbers(None, 1)
         with self.assertRaises(TypeError):
