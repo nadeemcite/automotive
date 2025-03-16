@@ -28,25 +28,20 @@ class TestSampleCode(TestCase):
             add_two_numbers(-1, -1)
 
     def test_large_numbers(self):
-        # Test with large integers
         self.assertEqual(add_two_numbers(1000000, 2000000), 3000000)
-        # Test near system max int if relevant to requirements
         large_number = sys.maxsize // 2
         self.assertEqual(add_two_numbers(large_number, large_number), large_number * 2)
 
     def test_overflow_cases(self):
         max_int = sys.maxsize
-        # Test both arguments near max_int
         with self.assertRaises(OverflowError):
             add_two_numbers(max_int, max_int)
-        # Test different combinations near bounds
         with self.assertRaises(OverflowError):
             add_two_numbers(max_int - 1, 2)
 
     def test_error_messages(self):
         with self.assertRaisesRegex(ValueError, "Only positive integers are allowed"):
             add_two_numbers(-1, 5)
-        # After adding type validation:
         with self.assertRaisesRegex(TypeError, "Inputs must be integers"):
             add_two_numbers(1.5, 2)
 
