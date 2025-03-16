@@ -34,11 +34,27 @@ class TestSampleCode(TestCase):
         large_number = sys.maxsize // 2
         self.assertEqual(add_two_numbers(large_number, large_number), large_number * 2)
 
-    def test_edge_cases(self):
-        # Very small positive numbers
-        self.assertEqual(add_two_numbers(0.1, 0.2), 0.3)
-        
-        # Test for potential overflow
+    def test_overflow_cases(self):
         max_int = sys.maxsize
+        # Test both arguments near max_int
         with self.assertRaises(OverflowError):
-            add_two_numbers(max_int, 1)
+            add_two_numbers(max_int, max_int)
+        # Test different combinations near bounds
+        with self.assertRaises(OverflowError):
+            add_two_numbers(max_int - 1, 2)
+
+    def test_error_messages(self):
+        with self.assertRaisesRegex(ValueError, "Only positive integers are allowed"):
+            add_two_numbers(-1, 5)
+        # After adding type validation:
+        with self.assertRaisesRegex(TypeError, "Inputs must be integers"):
+            add_two_numbers(1.5, 2)
+
+    def test_type_validation(self):
+        with self.assertRaises(TypeError):
+            add_two_numbers("1", 2)  # string input
+            add_two_numbers(1, "2")  # string input
+            add_two_numbers(1.5, 2)  # float input
+            add_two_numbers(1, 2.5)  # float input
+            add_two_numbers(None, 1) # None input
+            add_two_numbers(1, None) # None input

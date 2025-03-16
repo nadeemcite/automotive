@@ -12,6 +12,8 @@ def add_two_numbers(a: int, b: int) -> int:
         ValueError: If either number is negative
         TypeError: If inputs are not integers
     """
+    if not isinstance(a, int) or not isinstance(b, int):
+        raise TypeError("Inputs must be integers")
     if a < 0 or b < 0:
         raise ValueError("Only positive integers are allowed")
     return a + b
