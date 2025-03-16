@@ -37,7 +37,7 @@ jobs:
           docker run \
               --env-file pr_scanner.env \
               -e GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}" \
-              -e GITHUB_REPO="${{ github.repository }}" \
+              -e GITHUB_REPOSITORY="${{ github.repository }}" \
               -e GITHUB_REPO_OWNER="${{ github.repository_owner }}" \
               -e GITHUB_ISSUE_NUMBER="${{ github.event.issue.number }}" \
               -e PROJECT_ROOT=/src \
