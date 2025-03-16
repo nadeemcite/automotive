@@ -1,5 +1,6 @@
 from unittest import TestCase
 from automation.sample_code import add_two_numbers
+import sys
 
 class TestSampleCode(TestCase):
     def test_sample_code(self):
@@ -32,3 +33,12 @@ class TestSampleCode(TestCase):
         # Test near system max int if relevant to requirements
         large_number = sys.maxsize // 2
         self.assertEqual(add_two_numbers(large_number, large_number), large_number * 2)
+
+    def test_edge_cases(self):
+        # Very small positive numbers
+        self.assertEqual(add_two_numbers(0.1, 0.2), 0.3)
+        
+        # Test for potential overflow
+        max_int = sys.maxsize
+        with self.assertRaises(OverflowError):
+            add_two_numbers(max_int, 1)
