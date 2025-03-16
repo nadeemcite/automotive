@@ -38,8 +38,7 @@ jobs:
               --env-file pr_scanner.env \
               -e GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}" \
               -e GITHUB_REPOSITORY="${{ github.repository }}" \
-              -e GITHUB_REPO_OWNER="${{ github.repository_owner }}" \
-              -e GITHUB_ISSUE_NUMBER="${{ github.event.issue.number }}" \
+              -e GITHUB_ISSUE_NUMBER="${{ github.event.number }}" \
               -e PROJECT_ROOT=/src \
               -v "/tmp/out:/out" \
               -v "/tmp/in:/in" \
