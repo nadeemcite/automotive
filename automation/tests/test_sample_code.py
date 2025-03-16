@@ -51,10 +51,20 @@ class TestSampleCode(TestCase):
             add_two_numbers(1.5, 2)
 
     def test_type_validation(self):
+        # Test string inputs
         with self.assertRaises(TypeError):
-            add_two_numbers("1", 2)  # string input
-            add_two_numbers(1, "2")  # string input
-            add_two_numbers(1.5, 2)  # float input
-            add_two_numbers(1, 2.5)  # float input
-            add_two_numbers(None, 1) # None input
-            add_two_numbers(1, None) # None input
+            add_two_numbers("1", 2)
+        with self.assertRaises(TypeError):
+            add_two_numbers(1, "2")
+            
+        # Test float inputs
+        with self.assertRaises(TypeError):
+            add_two_numbers(1.5, 2)
+        with self.assertRaises(TypeError):
+            add_two_numbers(1, 2.5)
+            
+        # Test None inputs
+        with self.assertRaises(TypeError):
+            add_two_numbers(None, 1)
+        with self.assertRaises(TypeError):
+            add_two_numbers(1, None)
