@@ -32,5 +32,4 @@ jobs:
               -e PROJECT_ROOT=/src \
               -v "/tmp/out:/out" \
               -v "$(pwd):/src" \
-              nady5730642/ai-scan-job:latest \
-              python app.py
+              nady5730642/ai-scan-job:latest
