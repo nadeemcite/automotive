@@ -21,16 +21,6 @@ jobs:
           # Decode the base64-encoded PR_SCANNER secret into a file for Docker to use
           echo "${{ secrets.PR_SCANNER }}" | base64 --decode > pr_scanner.env
 
-      - name: Generate Code Diff for PR
-        run: |
-          # Ensure the required directories exist
-          mkdir -p /tmp/in
-          mkdir -p /tmp/out
-          # Fetch the base branch for the PR
-          git fetch origin ${{ github.event.pull_request.base.ref }}
-          # Write the diff between the base branch and HEAD to a file
-          git diff origin/${{ github.event.pull_request.base.ref }} HEAD > /tmp/in/codediff.txt
-
       - name: Run PR Scanner
         id: pr_scanner
         run: |
@@ -41,7 +31,6 @@ jobs:
               -e GITHUB_ISSUE_NUMBER="${{ github.event.number }}" \
               -e PROJECT_ROOT=/src \
               -v "/tmp/out:/out" \
-              -v "/tmp/in:/in" \
               -v "$(pwd):/src" \
               nady5730642/ai-scan-job:latest \
               python app.py
