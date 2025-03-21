@@ -39,7 +39,7 @@ def multiply_two_numbers(a: int, b: int) -> int:
     return a * b
 
 def divide_two_numbers(a: int, b: int) -> int:
-    """Multiply two positive integers together.
+    """Divide two positive integers together.
     
     Args:
         a (int): First positive integer
@@ -56,4 +56,4 @@ def divide_two_numbers(a: int, b: int) -> int:
         raise TypeError("Inputs must be integers")
     if a < 0 or b < 0:
         raise ValueError("Only positive integers are allowed")
-    return a * b
+    return a / b
